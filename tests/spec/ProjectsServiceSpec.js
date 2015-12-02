@@ -47,7 +47,7 @@ describe("ProjectsService", function() {
     expect(projectsService.getTags()).toBeDefined();
   });
 
-  //Not sure how to test for randomness accurately, for now trusut underscore and ignore this. 
+  //Not sure how to test for randomness accurately, for now trust underscore and ignore this. 
   xit("should return shuffled projects list  ", function() {
     var projects = projectsService.get();
     expect(projects[0].name).not.toEqual(_.toArray(sampleProjects.projects)[0].name);
@@ -77,9 +77,14 @@ describe("ProjectsService", function() {
       var projects = projectsService.get(["WEB"]);
       expect(projects.length).toBe(1);
     });
+
+    it("should filter the projects using the AND logic and not OR logic for matching tags", function() {
+      var projects = projectsService.get(["WEB", "C#"]);
+      expect(projects.length).toBe(1);
+    });
   });
 
-  describe("when get method is called tags array and none of the tags match", function(){
+  describe("when get method is called with tags array and none of the tags match", function(){
     it("should return 0 projects", function() {
       var projects = projectsService.get(["D'oh"]);
       expect(projects.length).toBe(0);
@@ -99,9 +104,9 @@ describe("ProjectsService", function() {
   });
 
   describe("when get method is called with tags array containing both matching and non matching tags", function(){
-    it("should return projects for the matching tags and ignore non matching tag", function() {
+    it("should return no projects", function() {
       var projects = projectsService.get(["c#", "D'oh"]);
-      expect(projects.length).toBe(2);
+      expect(projects.length).toBe(0);
     });
   });
 });

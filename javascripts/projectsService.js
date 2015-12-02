@@ -1,5 +1,5 @@
 (function(host, _) {
-  var applyTagsFilter = function (projects, tagsMap, tags) {
+  var applyTagsFilter = function (projects, tags) {
     if (typeof tags === "string") {
       tags = tags.split(",");
     }
@@ -12,13 +12,25 @@
       return projects;
     }
 
-    var projectNames = _.uniq(_.flatten(_.map(tags, function(tag){
-      var hit = tagsMap[tag.toLowerCase()];
-      return (hit && hit.projects) || [];
-    })));
-
     return _.filter(projects, function(project){
-      return _.contains(projectNames, project.name);
+      var projectTags = project.tags;
+      var bContinue = true; 
+      //Can this be made efficient? May be ...
+      for(var i=0; i< tags.length; i++) {
+        if(!bContinue) {
+          break;
+        }
+        var needle = tags[i].toLowerCase();
+        for(var j=0; j < projectTags.length; j++) {
+          if(projectTags[j].toLowerCase() === needle) {
+            bContinue = true;
+            break;
+          } else {
+            bContinue = false;
+          }
+        }
+      }
+      return bContinue;
     });
   };
 
@@ -101,7 +113,7 @@
     });
 
     this.get = function(tags){
-      return applyTagsFilter(projects, tagsMap, tags);
+      return applyTagsFilter(projects, tags);
     };
 
     this.getTags = function() {
